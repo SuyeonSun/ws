@@ -6,14 +6,34 @@
 </head>
 <body>
     <h1>Hello Express</h1>
-    <button onclick="sayHi()">Say Hi</button>
+    <div>
+        <input type="text" id="nickname" placeholder="닉네임" style="width: 200px">
+        <input type="text" id="message" placeholder="메세지" style="width: 200px">
+        <button onclick="sendMessage()">전송</button>
+    </div>
+    <div id="chat-log"></div>
 </body>
 </html>
 
 <script>
     const ws = new WebSocket("ws://localhost:8001")
+    // 메세지 수신
+    function receiveMessage(event) {
+        const chat = document.createElement("div")
+        const message = document.createTextNode(event.data)
+        chat.appendChild(message)
 
-    function sayHi() {
-        ws.send("Hello") // 서버에 데이터 전송
+        const chatLog = document.getElementById("chat-log")
+        chatLog.appendChild(chat)
     }
+
+    // 메세지 전송
+    function sendMessage() {
+        const nickname = document.getElementById("nickname").value
+        const message = document.getElementById("message").value
+        const fullMessage = `${nickname} : ${message}`
+        ws.send(fullMessage)
+    }
+
+    ws.onmessage = receiveMessage
 </script>
